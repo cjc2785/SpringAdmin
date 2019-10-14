@@ -13,9 +13,6 @@ public class AuthorService {
     private AuthorRepository authorRepository;
 
     public Author save(Author author) {
-//        if (author.getAuthorName() == null || author.getAuthorName()=="") {
-//            author.setAuthorName("TO_DO");
-//        }
         return authorRepository.save(author);
     }
 
