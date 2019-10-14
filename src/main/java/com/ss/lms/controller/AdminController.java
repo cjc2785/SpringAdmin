@@ -1,10 +1,8 @@
 package com.ss.lms.controller;
 
 
-import com.ss.lms.model.Author;
-import com.ss.lms.model.Publisher;
-import com.ss.lms.service.AuthorService;
-import com.ss.lms.service.PublisherService;
+import com.ss.lms.model.*;
+import com.ss.lms.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +20,18 @@ public class AdminController {
     private AuthorService authorService;
     @Autowired
     private PublisherService publisherService;
-
+    @Autowired
+    private LibraryBranchService libraryBranchService;
+    @Autowired
+    private BorrowerService borrowerService;
+    @Autowired
+    private BookService bookService;
     //AUTHOR//
     //AUTHOR//
     @PostMapping("/author/")
-    public @Valid @ResponseBody Author addAuthor(@RequestParam String authorName) {
+    public @Valid @ResponseBody Author addAuthor(@RequestBody Author authorDetails) {
         Author author = new Author();
-        author.setAuthorName(authorName);
+        author.setAuthorName(authorDetails.getAuthorName());
         authorService.save(author);
         return author;
     }
@@ -62,13 +65,12 @@ public class AdminController {
     //Publisher//
     @PostMapping("/publisher/")
     public @Valid @ResponseBody
-    Publisher addPublisher(@RequestParam String publisherName,
-                           String publisherAddress, String publisherPhone)
+    Publisher addPublisher(@RequestParam Publisher publisherDetails)
     {
         Publisher publisher = new Publisher();
-        publisher.setPublisherName(publisherName);
-        publisher.setPublisherAddress(publisherAddress);
-        publisher.setPublisherPhone(publisherPhone);
+        publisher.setPublisherName(publisherDetails.getPublisherName());
+        publisher.setPublisherAddress(publisherDetails.getPublisherAddress());
+        publisher.setPublisherPhone(publisherDetails.getPublisherPhone());
         publisherService.save(publisher);
         return publisher;
     }
@@ -85,6 +87,7 @@ public class AdminController {
         publisher.setPublisherName(publisherDetails.getPublisherName());
         publisher.setPublisherPhone(publisherDetails.getPublisherPhone());
         publisher.setPublisherAddress(publisherDetails.getPublisherAddress());
+
         return  new ResponseEntity<Publisher>(publisher, HttpStatus.ACCEPTED);
     }
     @DeleteMapping("/publisher/{p_id}")
@@ -97,6 +100,140 @@ public class AdminController {
     public Iterable<Publisher> getAllPublishers()
     {
         return publisherService.findAll();
+    }
+
+
+
+
+    ///LIBRARY BRANCH///
+    ///LIBRARY BRANCH///
+    ///LIBRARY BRANCH///
+    ///LIBRARY BRANCH///
+    @PostMapping("/branch/")
+    public @Valid @ResponseBody
+    LibraryBranch addLibraryBranch(@RequestBody LibraryBranch libraryBranchDetails)
+    {
+        LibraryBranch libraryBranch = new LibraryBranch();
+
+        libraryBranch.setBranchName(libraryBranchDetails.getBranchName());
+        libraryBranch.setBranchAddress(libraryBranchDetails.getBranchAddress());
+        libraryBranchService.save(libraryBranch);
+        return libraryBranch;
+    }
+    @GetMapping("/branch/{b_id}")
+    public ResponseEntity<?> getLibraryBranchById(@PathVariable Integer b_id)
+    {
+        LibraryBranch libraryBranch = libraryBranchService.findById(b_id);
+        return new ResponseEntity<LibraryBranch>(libraryBranch, HttpStatus.OK);
+    }
+    @PutMapping("/branch/{p_id}")
+    public ResponseEntity<?> updateLibraryBranchById( @PathVariable Integer p_id ,@Valid @RequestBody LibraryBranch libraryBranchDetails)
+    {
+        LibraryBranch libraryBranch = libraryBranchService.findById(p_id);
+
+        libraryBranch.setBranchName(libraryBranchDetails.getBranchName());
+        libraryBranch.setBranchAddress(libraryBranchDetails.getBranchAddress());
+        return  new ResponseEntity<LibraryBranch>(libraryBranch, HttpStatus.ACCEPTED);
+    }
+    @DeleteMapping("/branch/{b_id}")
+    public ResponseEntity<?> deleteLibraryBranchById(@PathVariable Integer b_id)
+    {
+        libraryBranchService.delete(b_id);
+        return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+    }
+    @GetMapping("/branches")
+    public Iterable<LibraryBranch> getAllLibraryBranch()
+    {
+        return libraryBranchService.findAll();
+    }
+
+
+   ///Borrower///
+   ///Borrower///
+   ///Borrower///
+   ///Borrower///
+    @PostMapping("/borrower/")
+    public @Valid @ResponseBody
+    Borrower addLibraryBranch(@RequestBody Borrower borrowerDetails)
+    {
+        Borrower borrower = new Borrower();
+
+        borrower.setName(borrowerDetails.getName());
+        borrower.setAddress(borrowerDetails.getAddress());
+        borrower.setPhone(borrowerDetails.getPhone());
+        borrowerService.save(borrower);
+        return borrower;
+    }
+    @GetMapping("/borrower/{br_id}")
+    public ResponseEntity<?> getBorrowerByCardNo(@PathVariable Integer br_id)
+    {
+        Borrower borrower = borrowerService.findByCardNo(br_id);
+        return new ResponseEntity<Borrower>(borrower, HttpStatus.OK);
+    }
+    @PutMapping("/borrower/{br_id}")
+    public ResponseEntity<?> updateBorrowerByCardNo( @PathVariable Integer br_id ,@Valid @RequestBody Borrower borrowerDetails)
+    {
+        Borrower borrower = borrowerService.findByCardNo(br_id);
+        borrower.setName(borrowerDetails.getName());
+        borrower.setAddress(borrowerDetails.getAddress());
+        borrower.setPhone(borrowerDetails.getPhone());
+        borrowerService.save(borrower);
+        return  new ResponseEntity<Borrower>(borrower, HttpStatus.ACCEPTED);
+    }
+    @DeleteMapping("/borrower/{br_id}")
+    public ResponseEntity<?> deleteBorrowerByCardNo(@PathVariable Integer br_id)
+    {
+        borrowerService.delete(br_id);
+        return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+    }
+    @GetMapping("/borrowers")
+    public Iterable<Borrower> getAllBorrowers()
+    {
+        return borrowerService.findAll();
+    }
+
+
+
+
+    ///Book///
+    ///Book///
+    ///Book///
+    ///Book///
+    @PostMapping("/book/")
+    public @Valid @ResponseBody
+    Book addBook(@RequestBody Book bookDetails)
+    {
+        Book book = new Book();
+        book.setTitle(bookDetails.getTitle());
+        book.setAuthId(bookDetails.getAuthId());
+        book.setPubId(bookDetails.getPubId());
+        bookService.save(book);
+        return book;
+    }
+    @GetMapping("/book/{bk_id}")
+    public ResponseEntity<?> getBookById(@PathVariable Integer bk_id)
+    {
+        Book book = bookService.findByBookId(bk_id);
+        return new ResponseEntity<Book>(book, HttpStatus.OK);
+    }
+    @PutMapping("/book/{bk_id}")
+    public ResponseEntity<?> updateBookById( @PathVariable Integer bk_id ,@Valid @RequestBody Book bookDetails)
+    {
+        Book book = bookService.findByBookId(bk_id);
+        book.setTitle(bookDetails.getTitle());
+        bookService.save(book);
+        return  new ResponseEntity<Book>(book, HttpStatus.ACCEPTED);
+    }
+    @DeleteMapping("/book/{bk_id}")
+    public ResponseEntity<?> deleteBookById(@PathVariable Integer bk_id)
+    {
+        bookService.delete(bk_id);
+        return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+    }
+    @GetMapping("/books")
+    public Iterable<Book> getAllBooks()
+    {
+        return bookService.findAll();
     }
 
 }

@@ -1,10 +1,10 @@
 package com.ss.lms.dao;
 
-import com.ss.lms.model.Author;
+import com.ss.lms.model.Book;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AuthorRepository extends CrudRepository<Author, Integer> {
-    Author getByAuthorId(Integer Id);
+public interface BookRepository extends CrudRepository<Book, Integer> {
+    Book getByBookId(Integer bookId);
 }
