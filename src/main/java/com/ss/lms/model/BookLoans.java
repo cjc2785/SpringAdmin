@@ -9,10 +9,8 @@ import javax.persistence.*;
 @Table(name = "tbl_book_loans", schema = "library")
 public class BookLoans {
     @Id
-    @Fetch(FetchMode.SELECT)
     private Integer bookId;
     private Integer branchId;
-    @Fetch(FetchMode.SELECT)
     private Integer cardNo;
     private String dateOut;
     @Column(name = "dueDate")
