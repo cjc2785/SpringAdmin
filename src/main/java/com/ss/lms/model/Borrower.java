@@ -1,5 +1,7 @@
 package com.ss.lms.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
@@ -46,4 +48,5 @@ public class Borrower {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
 }

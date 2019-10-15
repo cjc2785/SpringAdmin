@@ -9,11 +9,8 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer bookId;
-
     private String title;
-
     private Integer authId;
-
     private Integer pubId;
 
     public Integer getBookId() {
