@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin")
@@ -244,14 +245,24 @@ public class AdminController {
     ///BOOK LOANS///
     @GetMapping("/loans")
     public Iterable<BookLoans> getAllBookLoans() {return bookLoansService.findAll();}
-//    @PutMapping("/loan/borrower/{cn}/book/{bk_id}")
-//    public ResponseEntity<?> updateDueDate(@PathVariable Integer cn, @PathVariable Integer bk_id,@RequestBody BookLoans bookLoansDetail)
-//    {
-//       BookLoans bookLoans = bookLoansService.findByBoth(bk_id,cn);
-//        bookLoans.setDueDate(bookLoansDetail.getDueDate());
-//        bookLoansService.save(bookLoans);
-//        return new ResponseEntity<>(bookLoans,HttpStatus.ACCEPTED);
-//    }
+    @PutMapping("/loan/borrower/{c_n}/book/{bk_id}")
+    public ResponseEntity<?> updateDueDate(@PathVariable Integer c_n, @PathVariable Integer bk_id,@RequestBody BookLoans bookLoansDetail)
+    {
+
+        for (BookLoans bookLoans : bookLoansService.findAll())
+        {
+            if (bookLoans.getCardNo().equals(c_n) && bookLoans.getBookId().equals(bk_id))
+            {
+                    bookLoansDetail.setBookId(bookLoans.getBookId());
+                    bookLoansDetail.setCardNo(bookLoans.getCardNo());
+                    bookLoansDetail.setDateOut(bookLoans.getDateOut());
+                    bookLoans.setDueDate(bookLoansDetail.getDueDate());
+                    bookLoansService.save(bookLoans);
+                    return new ResponseEntity<BookLoans>(bookLoans,HttpStatus.ACCEPTED);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
 
 

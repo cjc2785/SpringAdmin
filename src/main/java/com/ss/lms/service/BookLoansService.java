@@ -14,10 +14,11 @@ public class BookLoansService {
 
     public BookLoans save(BookLoans bookLoans) {
         return bookLoansRepository.save(bookLoans);}
-//    public BookLoans findByBoth(Integer bookId, Integer cardNo)
-//    {
-//        return bookLoansRepository.getByBookIdAndCardNo(bookId,cardNo);
-//    }
+    public Optional<BookLoans> findByBoth( Integer cardNo,Integer bookId)
+    {
+        return bookLoansRepository.getByCardNoAndBookId(cardNo,bookId);
+    }
+
     public Iterable<BookLoans> findAll()
     {
         return bookLoansRepository.findAll();
