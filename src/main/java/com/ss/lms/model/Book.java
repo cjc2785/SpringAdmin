@@ -12,9 +12,7 @@ public class Book {
     private Integer bookId;
     @NotBlank(message = "Book Title Should Not be Blank")
     private String title;
-    @NotNull
     private Integer authId;
-    @NotNull
     private Integer pubId;
 
     public Integer getBookId() {

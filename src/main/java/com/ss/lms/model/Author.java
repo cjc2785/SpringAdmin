@@ -11,11 +11,9 @@ import java.util.UUID;
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
     private Integer authorId;
 
     @NotBlank(message = "Author name should not be blank")
-    @NotNull
     private String authorName;
 
     public Author() {
