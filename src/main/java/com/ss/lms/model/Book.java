@@ -2,6 +2,7 @@ package com.ss.lms.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "tbl_book", schema = "library")
@@ -9,11 +10,11 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer bookId;
-
+    @NotBlank(message = "Book Title Should Not be Blank")
     private String title;
-
+    @NotNull
     private Integer authId;
-
+    @NotNull
     private Integer pubId;
 
     public Integer getBookId() {

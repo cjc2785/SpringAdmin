@@ -1,7 +1,9 @@
 package com.ss.lms.model;
 
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Entity
@@ -9,9 +11,11 @@ import java.util.UUID;
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @NotNull
     private Integer authorId;
 
-    @NotBlank(message = "Summary should not be blank")
+    @NotBlank(message = "Author name should not be blank")
+    @NotNull
     private String authorName;
 
     public Author() {

@@ -1,7 +1,10 @@
 package com.ss.lms.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "tbl_borrower", schema = "library")
@@ -9,6 +12,7 @@ public class Borrower {
 
     @Id
     @GeneratedValue (strategy = GenerationType.AUTO)
+    @NotNull
     private Integer cardNo;
     @NotBlank (message = "Borrower Name Cannot Be Blank")
     private String name;
@@ -46,4 +50,5 @@ public class Borrower {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
 }

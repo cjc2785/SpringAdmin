@@ -14,7 +14,6 @@ public class BorrowerService {
     public Borrower save(Borrower borrower) {
         return borrowerRepository.save(borrower);
     }
-
     public Iterable<Borrower> findAll() {
         return borrowerRepository.findAll();
     }

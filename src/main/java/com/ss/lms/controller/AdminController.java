@@ -3,46 +3,69 @@ package com.ss.lms.controller;
 
 import com.ss.lms.model.*;
 import com.ss.lms.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/admin")
-@CrossOrigin
+@RequestMapping("/lms/admin/")
 public class AdminController {
 
-    @Autowired
-    private AuthorService authorService;
-    @Autowired
-    private PublisherService publisherService;
-    @Autowired
-    private LibraryBranchService libraryBranchService;
-    @Autowired
-    private BorrowerService borrowerService;
-    @Autowired
-    private BookService bookService;
+
+    private final AuthorService authorService;
+    private final PublisherService publisherService;
+    private final LibraryBranchService libraryBranchService;
+    private final BorrowerService borrowerService;
+    private final BookService bookService;
+    private final BookLoansService bookLoansService;
+
+    public AdminController(AuthorService authorService, PublisherService publisherService, LibraryBranchService libraryBranchService,
+                           BorrowerService borrowerService, BookService bookService, BookLoansService bookLoansService, BookLoansService bookLoansService1) {
+
+        this.authorService = authorService;
+        this.publisherService = publisherService;
+        this.libraryBranchService = libraryBranchService;
+        this.borrowerService = borrowerService;
+        this.bookService = bookService;
+        this.bookLoansService = bookLoansService1;
+    }
+
     //AUTHOR//
     //AUTHOR//
     @PostMapping("/author/")
-    public @Valid @ResponseBody Author addAuthor(@RequestBody Author authorDetails) {
-        Author author = new Author();
-        author.setAuthorName(authorDetails.getAuthorName());
-        authorService.save(author);
-        return author;
+    public @Valid @ResponseBody ResponseEntity<?> addAuthor(@RequestBody Author authorDetails) {
+       if(authorDetails != null)
+       {
+           Author author = new Author();
+           author.setAuthorName(authorDetails.getAuthorName());
+           authorService.save(author);
+           return new ResponseEntity<Author>(author, HttpStatus.CREATED);
+       }
+       else {
+           String notValid = "Not Valid";
+           assert false;
+           authorDetails.setAuthorId(0);
+           authorDetails.setAuthorName("NULL");
+           return new ResponseEntity<String>(notValid, HttpStatus.OK);
+       }
+
     }
     @PutMapping("/author/{p_id}")
-    public ResponseEntity<?> updateAuthorById( @PathVariable Integer p_id ,@Valid @RequestBody Author authorDetails)
+    public ResponseEntity<?> updateAuthorById( @PathVariable int p_id ,@Valid @RequestBody Author authorDetails)
     {
-        Author author = authorService.findById(p_id);
-        author.setAuthorName(authorDetails.getAuthorName());
-        authorService.save(author);
-        return  new ResponseEntity<Author>(author, HttpStatus.ACCEPTED);
-    }
+
+            Author author = authorService.findById(p_id);
+                author.setAuthorName(authorDetails.getAuthorName());
+                authorService.save(author);
+                return  new ResponseEntity<Author>(author, HttpStatus.ACCEPTED);
+
+        }
+
     @GetMapping("/authors")
     public Iterable<Author> getAllPTs() {
         return authorService.findAll();
@@ -59,20 +82,18 @@ public class AdminController {
         return new ResponseEntity<String>( HttpStatus.NO_CONTENT);
     }
 
-
-
     //Publisher//
     //Publisher//
     @PostMapping("/publisher/")
     public @Valid @ResponseBody
-    Publisher addPublisher(@RequestParam Publisher publisherDetails)
+    ResponseEntity<?> addPublisher(@RequestBody Publisher publisherDetails)
     {
         Publisher publisher = new Publisher();
         publisher.setPublisherName(publisherDetails.getPublisherName());
         publisher.setPublisherAddress(publisherDetails.getPublisherAddress());
         publisher.setPublisherPhone(publisherDetails.getPublisherPhone());
         publisherService.save(publisher);
-        return publisher;
+        return new ResponseEntity<Publisher>(publisher, HttpStatus.CREATED);
     }
     @GetMapping("/publisher/{p_id}")
     public ResponseEntity<?> getPublisherById(@PathVariable Integer p_id)
@@ -87,7 +108,7 @@ public class AdminController {
         publisher.setPublisherName(publisherDetails.getPublisherName());
         publisher.setPublisherPhone(publisherDetails.getPublisherPhone());
         publisher.setPublisherAddress(publisherDetails.getPublisherAddress());
-
+        publisherService.save(publisher);
         return  new ResponseEntity<Publisher>(publisher, HttpStatus.ACCEPTED);
     }
     @DeleteMapping("/publisher/{p_id}")
@@ -97,13 +118,10 @@ public class AdminController {
         return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
     }
     @GetMapping("/publishers")
-    public Iterable<Publisher> getAllPublishers()
+    public Iterable<Publisher>  getAllPublishers()
     {
         return publisherService.findAll();
     }
-
-
-
 
     ///LIBRARY BRANCH///
     ///LIBRARY BRANCH///
@@ -111,14 +129,14 @@ public class AdminController {
     ///LIBRARY BRANCH///
     @PostMapping("/branch/")
     public @Valid @ResponseBody
-    LibraryBranch addLibraryBranch(@RequestBody LibraryBranch libraryBranchDetails)
+    ResponseEntity<?> addLibraryBranch(@RequestBody LibraryBranch libraryBranchDetails)
     {
         LibraryBranch libraryBranch = new LibraryBranch();
 
         libraryBranch.setBranchName(libraryBranchDetails.getBranchName());
         libraryBranch.setBranchAddress(libraryBranchDetails.getBranchAddress());
         libraryBranchService.save(libraryBranch);
-        return libraryBranch;
+        return new ResponseEntity<LibraryBranch>(libraryBranch, HttpStatus.CREATED);
     }
     @GetMapping("/branch/{b_id}")
     public ResponseEntity<?> getLibraryBranchById(@PathVariable Integer b_id)
@@ -147,14 +165,13 @@ public class AdminController {
         return libraryBranchService.findAll();
     }
 
-
    ///Borrower///
    ///Borrower///
    ///Borrower///
    ///Borrower///
     @PostMapping("/borrower/")
     public @Valid @ResponseBody
-    Borrower addLibraryBranch(@RequestBody Borrower borrowerDetails)
+    ResponseEntity<?> addLibraryBranch(@RequestBody Borrower borrowerDetails)
     {
         Borrower borrower = new Borrower();
 
@@ -162,7 +179,7 @@ public class AdminController {
         borrower.setAddress(borrowerDetails.getAddress());
         borrower.setPhone(borrowerDetails.getPhone());
         borrowerService.save(borrower);
-        return borrower;
+        return new ResponseEntity<Borrower>(borrower, HttpStatus.CREATED);
     }
     @GetMapping("/borrower/{br_id}")
     public ResponseEntity<?> getBorrowerByCardNo(@PathVariable Integer br_id)
@@ -191,11 +208,13 @@ public class AdminController {
     {
         return borrowerService.findAll();
     }
+    @PutMapping("/borrower/{br_id}/dueDate")
+//    private ResponseEntity<?> updateDueDateById(@PathVariable Integer br_id, @RequestBody Borrower borrower)
+//    {
+//
+//        borrowerService.updateDueDate()
+//    }
 
-
-
-
-    ///Book///
     ///Book///
     ///Book///
     ///Book///
@@ -235,5 +254,31 @@ public class AdminController {
     {
         return bookService.findAll();
     }
+
+    ///BOOK LOANS///
+    ///BOOK LOANS///
+    ///BOOK LOANS///
+    @GetMapping("/loans")
+    public Iterable<BookLoans> getAllBookLoans() {return bookLoansService.findAll();}
+    @PutMapping("/loan/borrower/{c_n}/book/{bk_id}")
+    public ResponseEntity<?> updateDueDate(@PathVariable Integer c_n, @PathVariable Integer bk_id,@RequestBody BookLoans bookLoansDetail)
+    {
+
+        for (BookLoans bookLoans : bookLoansService.findAll())
+        {
+            if (bookLoans.getCardNo().equals(c_n) && bookLoans.getBookId().equals(bk_id))
+            {
+                    bookLoansDetail.setBookId(bookLoans.getBookId());
+                    bookLoansDetail.setCardNo(bookLoans.getCardNo());
+                    bookLoansDetail.setDateOut(bookLoans.getDateOut());
+                    bookLoans.setDueDate(bookLoansDetail.getDueDate());
+                    bookLoansService.save(bookLoans);
+                    return new ResponseEntity<BookLoans>(bookLoans,HttpStatus.ACCEPTED);
+            }
+        }
+        return new ResponseEntity<String>("book Loan not found",HttpStatus.NOT_FOUND);
+    }
+
+
 
 }
