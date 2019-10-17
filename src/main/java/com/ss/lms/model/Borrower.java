@@ -12,6 +12,7 @@ public class Borrower {
 
     @Id
     @GeneratedValue (strategy = GenerationType.AUTO)
+    @NotNull
     private Integer cardNo;
     @NotBlank (message = "Borrower Name Cannot Be Blank")
     private String name;

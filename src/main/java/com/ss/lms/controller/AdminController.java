@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.Valid;
 import java.util.Optional;
@@ -23,7 +25,12 @@ public class AdminController {
     private final BorrowerService borrowerService;
     private final BookService bookService;
     private final BookLoansService bookLoansService;
-
+    private final Book emptyBook = new Book();
+    private final Author emptyAuthor = new Author();
+    private final Borrower emptyBorrower = new Borrower();
+    private final BookLoans emptyBookLoans = new BookLoans();
+    private final LibraryBranch emptyLibraryBranch = new LibraryBranch();
+    private final Publisher emptyPublisher = new Publisher();
     public AdminController(AuthorService authorService, PublisherService publisherService, LibraryBranchService libraryBranchService,
                            BorrowerService borrowerService, BookService bookService, BookLoansService bookLoansService, BookLoansService bookLoansService1) {
 
@@ -34,7 +41,15 @@ public class AdminController {
         this.bookService = bookService;
         this.bookLoansService = bookLoansService1;
     }
+    @ExceptionHandler(HttpClientErrorException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public @ResponseBody String handleResourceNotFound( ) {return "Could not find resource";}
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handle(Exception e) {
+        return "invalid request";
+    }
     //AUTHOR//
     //AUTHOR//
     @PostMapping("/author/")
@@ -47,19 +62,18 @@ public class AdminController {
            return new ResponseEntity<Author>(author, HttpStatus.CREATED);
        }
        else {
-           String notValid = "Not Valid";
-           assert false;
-           authorDetails.setAuthorId(0);
-           authorDetails.setAuthorName("NULL");
-           return new ResponseEntity<String>(notValid, HttpStatus.OK);
+           return new ResponseEntity<Author>(emptyAuthor, HttpStatus.BAD_REQUEST);
        }
 
     }
     @PutMapping("/author/{p_id}")
     public ResponseEntity<?> updateAuthorById( @PathVariable int p_id ,@Valid @RequestBody Author authorDetails)
     {
-
-            Author author = authorService.findById(p_id);
+                Author author = authorService.findById(p_id);
+                if (author == null)
+                {
+                    return  new ResponseEntity<>(emptyAuthor,HttpStatus.NOT_FOUND);
+                }
                 author.setAuthorName(authorDetails.getAuthorName());
                 authorService.save(author);
                 return  new ResponseEntity<Author>(author, HttpStatus.ACCEPTED);
@@ -73,7 +87,12 @@ public class AdminController {
 
     @GetMapping("/author/{a_id}")
     public ResponseEntity<?> getAuthorById(@PathVariable Integer a_id) {
+
         Author author = authorService.findById(a_id);
+        if (author == null)
+        {
+            return new ResponseEntity<>(emptyAuthor,HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<Author>(author, HttpStatus.OK);
     }
     @DeleteMapping("/author/{a_id}")
@@ -99,12 +118,20 @@ public class AdminController {
     public ResponseEntity<?> getPublisherById(@PathVariable Integer p_id)
     {
         Publisher publisher = publisherService.findById(p_id);
+        if(publisher == null)
+        {
+            return new ResponseEntity<Publisher>(emptyPublisher, HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<Publisher>(publisher, HttpStatus.OK);
     }
     @PutMapping("/publisher/{p_id}")
     public ResponseEntity<?> updatePublisherById( @PathVariable Integer p_id ,@Valid @RequestBody Publisher publisherDetails)
     {
         Publisher publisher = publisherService.findById(p_id);
+        if (publisher == null)
+        {
+            return new ResponseEntity<>(emptyPublisher, HttpStatus.NOT_FOUND);
+        }
         publisher.setPublisherName(publisherDetails.getPublisherName());
         publisher.setPublisherPhone(publisherDetails.getPublisherPhone());
         publisher.setPublisherAddress(publisherDetails.getPublisherAddress());
@@ -142,13 +169,21 @@ public class AdminController {
     public ResponseEntity<?> getLibraryBranchById(@PathVariable Integer b_id)
     {
         LibraryBranch libraryBranch = libraryBranchService.findById(b_id);
+
+        if (libraryBranch == null)
+        {
+            return new ResponseEntity<>(emptyLibraryBranch,HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<LibraryBranch>(libraryBranch, HttpStatus.OK);
     }
     @PutMapping("/branch/{p_id}")
     public ResponseEntity<?> updateLibraryBranchById( @PathVariable Integer p_id ,@Valid @RequestBody LibraryBranch libraryBranchDetails)
     {
         LibraryBranch libraryBranch = libraryBranchService.findById(p_id);
-
+        if (libraryBranch == null)
+        {
+            return new ResponseEntity<>(emptyLibraryBranch,HttpStatus.NOT_FOUND);
+        }
         libraryBranch.setBranchName(libraryBranchDetails.getBranchName());
         libraryBranch.setBranchAddress(libraryBranchDetails.getBranchAddress());
         return  new ResponseEntity<LibraryBranch>(libraryBranch, HttpStatus.ACCEPTED);
@@ -185,12 +220,20 @@ public class AdminController {
     public ResponseEntity<?> getBorrowerByCardNo(@PathVariable Integer br_id)
     {
         Borrower borrower = borrowerService.findByCardNo(br_id);
+        if (borrower == null)
+        {
+            return new ResponseEntity<Borrower>(emptyBorrower,HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<Borrower>(borrower, HttpStatus.OK);
     }
     @PutMapping("/borrower/{br_id}")
     public ResponseEntity<?> updateBorrowerByCardNo( @PathVariable Integer br_id ,@Valid @RequestBody Borrower borrowerDetails)
     {
         Borrower borrower = borrowerService.findByCardNo(br_id);
+        if (borrower == null)
+        {
+            return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        }
         borrower.setName(borrowerDetails.getName());
         borrower.setAddress(borrowerDetails.getAddress());
         borrower.setPhone(borrowerDetails.getPhone());
@@ -208,12 +251,6 @@ public class AdminController {
     {
         return borrowerService.findAll();
     }
-    @PutMapping("/borrower/{br_id}/dueDate")
-//    private ResponseEntity<?> updateDueDateById(@PathVariable Integer br_id, @RequestBody Borrower borrower)
-//    {
-//
-//        borrowerService.updateDueDate()
-//    }
 
     ///Book///
     ///Book///
@@ -233,6 +270,10 @@ public class AdminController {
     public ResponseEntity<?> getBookById(@PathVariable Integer bk_id)
     {
         Book book = bookService.findByBookId(bk_id);
+        if (book == null)
+        {
+            return new ResponseEntity<>(emptyBook,HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<Book>(book, HttpStatus.OK);
     }
     @PutMapping("/book/{bk_id}")
