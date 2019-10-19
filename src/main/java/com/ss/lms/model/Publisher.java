@@ -2,15 +2,16 @@ package com.ss.lms.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 
 @Entity
-@Table (name = "tbl_publisher", schema = "Library")
-public class Publisher {
+@Table (name = "tbl_publisher")
+public class Publisher implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "publisherId")
     private Integer publisherId;
 
-    @NotBlank(message = "Publisher Name Cannot Be Blank")
     private String publisherName;
 
     private String publisherAddress;

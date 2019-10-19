@@ -1,19 +1,32 @@
 package com.ss.lms.model;
 
+import com.ss.lms.model.Author;
+import org.hibernate.annotations.OnDelete;
+
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "tbl_book", schema = "library")
+@Table(name = "tbl_book")
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer bookId;
-    @NotBlank(message = "Book Title Should Not be Blank")
     private String title;
-    private Integer authId;
-    private Integer pubId;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn( name = "authId",nullable = false)
+    private Author author;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "pubId", nullable = false)
+    private Publisher publisher;
+
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
+    }
 
     public Integer getBookId() {
         return bookId;
@@ -23,27 +36,19 @@ public class Book {
         this.bookId = bookId;
     }
 
+    public Publisher getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+    }
+
     public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public Integer getAuthId() {
-        return authId;
-    }
-
-    public void setAuthId(Integer authId) {
-        this.authId = authId;
-    }
-
-    public Integer getPubId() {
-        return pubId;
-    }
-
-    public void setPubId(Integer pubId) {
-        this.pubId = pubId;
     }
 }

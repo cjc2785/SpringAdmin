@@ -3,6 +3,8 @@ package com.ss.lms.controller;
 
 import com.ss.lms.model.*;
 import com.ss.lms.service.*;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +14,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
-
+@EnableDiscoveryClient
 @RestController
 @RequestMapping("/lms/admin/")
 public class AdminController {
@@ -52,7 +55,7 @@ public class AdminController {
     }
     //AUTHOR//
     //AUTHOR//
-    @PostMapping("/author/")
+    @PostMapping("/authors")
     public @Valid @ResponseBody ResponseEntity<?> addAuthor(@RequestBody Author authorDetails) {
        if(authorDetails != null)
        {
@@ -66,10 +69,10 @@ public class AdminController {
        }
 
     }
-    @PutMapping("/author/{p_id}")
-    public ResponseEntity<?> updateAuthorById( @PathVariable int p_id ,@Valid @RequestBody Author authorDetails)
+    @PutMapping("/authors/{a_id}")
+    public ResponseEntity<?> updateAuthorById( @PathVariable int a_id ,@Valid @RequestBody Author authorDetails)
     {
-                Author author = authorService.findById(p_id);
+                Author author = authorService.findById(a_id);
                 if (author == null)
                 {
                     return  new ResponseEntity<>(emptyAuthor,HttpStatus.NOT_FOUND);
@@ -85,7 +88,7 @@ public class AdminController {
         return authorService.findAll();
     }
 
-    @GetMapping("/author/{a_id}")
+    @GetMapping("/authors/{a_id}")
     public ResponseEntity<?> getAuthorById(@PathVariable Integer a_id) {
 
         Author author = authorService.findById(a_id);
@@ -95,15 +98,24 @@ public class AdminController {
         }
         return new ResponseEntity<Author>(author, HttpStatus.OK);
     }
-    @DeleteMapping("/author/{a_id}")
+    @DeleteMapping("/authors/{a_id}")
     public ResponseEntity<?> deleteAuthorById(@PathVariable Integer a_id){
         authorService.delete(a_id);
         return new ResponseEntity<String>( HttpStatus.NO_CONTENT);
     }
+    @GetMapping("authors/{a_id}/books")
+    private @ResponseBody
+    List<Book> getBooks(@PathVariable Integer a_id)
+    {
+        Author author = authorService.findById(a_id);
+
+        return bookService.getByAuthor(author);
+
+    }
 
     //Publisher//
     //Publisher//
-    @PostMapping("/publisher/")
+    @PostMapping("/publishers/")
     public @Valid @ResponseBody
     ResponseEntity<?> addPublisher(@RequestBody Publisher publisherDetails)
     {
@@ -114,7 +126,7 @@ public class AdminController {
         publisherService.save(publisher);
         return new ResponseEntity<Publisher>(publisher, HttpStatus.CREATED);
     }
-    @GetMapping("/publisher/{p_id}")
+    @GetMapping("/publishers/{p_id}")
     public ResponseEntity<?> getPublisherById(@PathVariable Integer p_id)
     {
         Publisher publisher = publisherService.findById(p_id);
@@ -124,7 +136,7 @@ public class AdminController {
         }
         return new ResponseEntity<Publisher>(publisher, HttpStatus.OK);
     }
-    @PutMapping("/publisher/{p_id}")
+    @PutMapping("/publishers/{p_id}")
     public ResponseEntity<?> updatePublisherById( @PathVariable Integer p_id ,@Valid @RequestBody Publisher publisherDetails)
     {
         Publisher publisher = publisherService.findById(p_id);
@@ -138,7 +150,7 @@ public class AdminController {
         publisherService.save(publisher);
         return  new ResponseEntity<Publisher>(publisher, HttpStatus.ACCEPTED);
     }
-    @DeleteMapping("/publisher/{p_id}")
+    @DeleteMapping("/publishers/{p_id}")
     public ResponseEntity<?> deletePublisherById(@PathVariable Integer p_id)
     {
         publisherService.delete(p_id);
@@ -154,7 +166,7 @@ public class AdminController {
     ///LIBRARY BRANCH///
     ///LIBRARY BRANCH///
     ///LIBRARY BRANCH///
-    @PostMapping("/branch/")
+    @PostMapping("/branches/")
     public @Valid @ResponseBody
     ResponseEntity<?> addLibraryBranch(@RequestBody LibraryBranch libraryBranchDetails)
     {
@@ -165,7 +177,7 @@ public class AdminController {
         libraryBranchService.save(libraryBranch);
         return new ResponseEntity<LibraryBranch>(libraryBranch, HttpStatus.CREATED);
     }
-    @GetMapping("/branch/{b_id}")
+    @GetMapping("/branches/{b_id}")
     public ResponseEntity<?> getLibraryBranchById(@PathVariable Integer b_id)
     {
         LibraryBranch libraryBranch = libraryBranchService.findById(b_id);
@@ -176,7 +188,7 @@ public class AdminController {
         }
         return new ResponseEntity<LibraryBranch>(libraryBranch, HttpStatus.OK);
     }
-    @PutMapping("/branch/{p_id}")
+    @PutMapping("/branches/{p_id}")
     public ResponseEntity<?> updateLibraryBranchById( @PathVariable Integer p_id ,@Valid @RequestBody LibraryBranch libraryBranchDetails)
     {
         LibraryBranch libraryBranch = libraryBranchService.findById(p_id);
@@ -188,7 +200,7 @@ public class AdminController {
         libraryBranch.setBranchAddress(libraryBranchDetails.getBranchAddress());
         return  new ResponseEntity<LibraryBranch>(libraryBranch, HttpStatus.ACCEPTED);
     }
-    @DeleteMapping("/branch/{b_id}")
+    @DeleteMapping("/branches/{b_id}")
     public ResponseEntity<?> deleteLibraryBranchById(@PathVariable Integer b_id)
     {
         libraryBranchService.delete(b_id);
@@ -204,7 +216,7 @@ public class AdminController {
    ///Borrower///
    ///Borrower///
    ///Borrower///
-    @PostMapping("/borrower/")
+    @PostMapping("/borrowers/")
     public @Valid @ResponseBody
     ResponseEntity<?> addLibraryBranch(@RequestBody Borrower borrowerDetails)
     {
@@ -216,7 +228,7 @@ public class AdminController {
         borrowerService.save(borrower);
         return new ResponseEntity<Borrower>(borrower, HttpStatus.CREATED);
     }
-    @GetMapping("/borrower/{br_id}")
+    @GetMapping("/borrowers/{br_id}")
     public ResponseEntity<?> getBorrowerByCardNo(@PathVariable Integer br_id)
     {
         Borrower borrower = borrowerService.findByCardNo(br_id);
@@ -226,7 +238,7 @@ public class AdminController {
         }
         return new ResponseEntity<Borrower>(borrower, HttpStatus.OK);
     }
-    @PutMapping("/borrower/{br_id}")
+    @PutMapping("/borrowers/{br_id}")
     public ResponseEntity<?> updateBorrowerByCardNo( @PathVariable Integer br_id ,@Valid @RequestBody Borrower borrowerDetails)
     {
         Borrower borrower = borrowerService.findByCardNo(br_id);
@@ -240,7 +252,7 @@ public class AdminController {
         borrowerService.save(borrower);
         return  new ResponseEntity<Borrower>(borrower, HttpStatus.ACCEPTED);
     }
-    @DeleteMapping("/borrower/{br_id}")
+    @DeleteMapping("/borrowers/{br_id}")
     public ResponseEntity<?> deleteBorrowerByCardNo(@PathVariable Integer br_id)
     {
         borrowerService.delete(br_id);
@@ -255,18 +267,18 @@ public class AdminController {
     ///Book///
     ///Book///
     ///Book///
-    @PostMapping("/book/")
+    @PostMapping("/books/")
     public @Valid @ResponseBody
     Book addBook(@RequestBody Book bookDetails)
     {
         Book book = new Book();
         book.setTitle(bookDetails.getTitle());
-        book.setAuthId(bookDetails.getAuthId());
-        book.setPubId(bookDetails.getPubId());
+        book.setAuthor(bookDetails.getAuthor());
+        book.setPublisher(bookDetails.getPublisher());
         bookService.save(book);
         return book;
     }
-    @GetMapping("/book/{bk_id}")
+    @GetMapping("/books/{bk_id}")
     public ResponseEntity<?> getBookById(@PathVariable Integer bk_id)
     {
         Book book = bookService.findByBookId(bk_id);
@@ -276,7 +288,7 @@ public class AdminController {
         }
         return new ResponseEntity<Book>(book, HttpStatus.OK);
     }
-    @PutMapping("/book/{bk_id}")
+    @PutMapping("/books/{bk_id}")
     public ResponseEntity<?> updateBookById( @PathVariable Integer bk_id ,@Valid @RequestBody Book bookDetails)
     {
         Book book = bookService.findByBookId(bk_id);
@@ -284,7 +296,7 @@ public class AdminController {
         bookService.save(book);
         return  new ResponseEntity<Book>(book, HttpStatus.ACCEPTED);
     }
-    @DeleteMapping("/book/{bk_id}")
+    @DeleteMapping("/books/{bk_id}")
     public ResponseEntity<?> deleteBookById(@PathVariable Integer bk_id)
     {
         bookService.delete(bk_id);
@@ -301,7 +313,7 @@ public class AdminController {
     ///BOOK LOANS///
     @GetMapping("/loans")
     public Iterable<BookLoans> getAllBookLoans() {return bookLoansService.findAll();}
-    @PutMapping("/loan/borrower/{c_n}/book/{bk_id}")
+    @PutMapping("/loans/borrowers/{c_n}/books/{bk_id}")
     public ResponseEntity<?> updateDueDate(@PathVariable Integer c_n, @PathVariable Integer bk_id,@RequestBody BookLoans bookLoansDetail)
     {
 

@@ -1,24 +1,19 @@
 package com.ss.lms.model;
-
-
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.UUID;
 
 @Entity
-@Table(name = "tbl_author", schema = "library")
-public class Author {
+@Table(name = "tbl_author")
+public class Author implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "authorId")
     private Integer authorId;
-
-    @NotBlank(message = "Author name should not be blank")
+    @Column(name = "authorName")
     private String authorName;
 
-    public Author() {
-
-    }
 
     public Integer getAuthorId() {
         return authorId;
