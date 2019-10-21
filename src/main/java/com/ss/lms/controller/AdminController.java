@@ -3,9 +3,12 @@ package com.ss.lms.controller;
 
 import com.ss.lms.model.*;
 import com.ss.lms.service.*;
+<<<<<<< HEAD
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.expression.spel.ast.NullLiteral;
+=======
+>>>>>>> admin
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -14,26 +17,38 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.Valid;
+<<<<<<< HEAD
 import java.util.List;
 import java.util.Optional;
 @EnableDiscoveryClient
+=======
+import java.util.Optional;
+
+>>>>>>> admin
 @RestController
 @RequestMapping("/lms/admin/")
 public class AdminController {
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> admin
     private final AuthorService authorService;
     private final PublisherService publisherService;
     private final LibraryBranchService libraryBranchService;
     private final BorrowerService borrowerService;
     private final BookService bookService;
     private final BookLoansService bookLoansService;
+<<<<<<< HEAD
     private final Book emptyBook = new Book();
     private final Author emptyAuthor = new Author();
     private final Borrower emptyBorrower = new Borrower();
     private final BookLoans emptyBookLoans = new BookLoans();
     private final LibraryBranch emptyLibraryBranch = new LibraryBranch();
     private final Publisher emptyPublisher = new Publisher();
+=======
+
+>>>>>>> admin
     public AdminController(AuthorService authorService, PublisherService publisherService, LibraryBranchService libraryBranchService,
                            BorrowerService borrowerService, BookService bookService, BookLoansService bookLoansService, BookLoansService bookLoansService1) {
 
@@ -44,6 +59,7 @@ public class AdminController {
         this.bookService = bookService;
         this.bookLoansService = bookLoansService1;
     }
+<<<<<<< HEAD
     @ExceptionHandler(HttpClientErrorException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public @ResponseBody String handleResourceNotFound( ) {return "Could not find resource";}
@@ -68,6 +84,17 @@ public class AdminController {
            return new ResponseEntity<Author>(emptyAuthor, HttpStatus.BAD_REQUEST);
        }
 
+=======
+
+    //AUTHOR//
+    //AUTHOR//
+    @PostMapping("/author/")
+    public @Valid @ResponseBody ResponseEntity<?> addAuthor(@RequestBody Author authorDetails) {
+        Author author = new Author();
+        author.setAuthorName(authorDetails.getAuthorName());
+        authorService.save(author);
+        return new ResponseEntity<Author>(author, HttpStatus.CREATED);
+>>>>>>> admin
     }
     @PutMapping("/authors/{a_id}")
     public ResponseEntity<?> updateAuthorById( @PathVariable int a_id ,@Valid @RequestBody Author authorDetails)
@@ -109,10 +136,13 @@ public class AdminController {
     {
         Author author = authorService.findById(a_id);
 
+<<<<<<< HEAD
         return bookService.getByAuthor(author);
 
     }
 
+=======
+>>>>>>> admin
     //Publisher//
     //Publisher//
     @PostMapping("/publishers/")
@@ -263,8 +293,17 @@ public class AdminController {
     {
         return borrowerService.findAll();
     }
+    @PutMapping("/borrower/{br_id}/dueDate")
+//    private ResponseEntity<?> updateDueDateById(@PathVariable Integer br_id, @RequestBody Borrower borrower)
+//    {
+//
+//        borrowerService.updateDueDate()
+//    }
 
+<<<<<<< HEAD
     ///Book///
+=======
+>>>>>>> admin
     ///Book///
     ///Book///
     @PostMapping("/books/")
@@ -313,7 +352,25 @@ public class AdminController {
     ///BOOK LOANS///
     @GetMapping("/loans")
     public Iterable<BookLoans> getAllBookLoans() {return bookLoansService.findAll();}
+<<<<<<< HEAD
     @PutMapping("/loans/borrowers/{c_n}/books/{bk_id}")
+    public ResponseEntity<?> updateDueDate(@PathVariable Integer c_n, @PathVariable Integer bk_id,@RequestBody BookLoans bookLoansDetail)
+    {
+        if ( bookLoansDetail != null)
+        {
+
+            Book book = bookService.findByBookId(bk_id);
+            Borrower borrower = borrowerService.findByCardNo(c_n);
+            for (BookLoans bookLoans : bookLoansService.findAll())
+            {
+
+                if (bookLoans.getId().getCardNo() == borrower.getCardNo() && bookLoans.getId().getBookId() == book.getBookId())
+                {
+                    bookLoansDetail.setId(bookLoans.getId());
+                    bookLoansDetail.setBook(bookLoans.getBook());
+                    bookLoansDetail.setBorrower(bookLoans.getBorrower());
+=======
+    @PutMapping("/loan/borrower/{c_n}/book/{bk_id}")
     public ResponseEntity<?> updateDueDate(@PathVariable Integer c_n, @PathVariable Integer bk_id,@RequestBody BookLoans bookLoansDetail)
     {
 
@@ -323,13 +380,25 @@ public class AdminController {
             {
                     bookLoansDetail.setBookId(bookLoans.getBookId());
                     bookLoansDetail.setCardNo(bookLoans.getCardNo());
+>>>>>>> admin
                     bookLoansDetail.setDateOut(bookLoans.getDateOut());
                     bookLoans.setDueDate(bookLoansDetail.getDueDate());
                     bookLoansService.save(bookLoans);
                     return new ResponseEntity<BookLoans>(bookLoans,HttpStatus.ACCEPTED);
+<<<<<<< HEAD
+                }
+            }
+            return new ResponseEntity<>(emptyBookLoans,HttpStatus.NOT_FOUND);
+        }
+        else
+        {
+            return new ResponseEntity<>(emptyBookLoans,HttpStatus.BAD_REQUEST);
+        }
+=======
             }
         }
-        return new ResponseEntity<String>("book Loan not found",HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+>>>>>>> admin
     }
 
 
