@@ -1,8 +1,5 @@
 package com.ss.lms.model;
 
-import com.ss.lms.model.Author;
-import org.hibernate.annotations.OnDelete;
-
 import javax.persistence.*;
 
 @Entity
@@ -12,7 +9,6 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer bookId;
     private String title;
-<<<<<<< HEAD
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn( name = "authId",nullable = false)
     private Author author;
@@ -28,10 +24,7 @@ public class Book {
     public void setAuthor(Author author) {
         this.author = author;
     }
-=======
-    private Integer authId;
-    private Integer pubId;
->>>>>>> admin
+
 
     public Integer getBookId() {
         return bookId;
