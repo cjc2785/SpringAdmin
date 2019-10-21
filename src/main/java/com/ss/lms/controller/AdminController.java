@@ -316,20 +316,31 @@ public class AdminController {
     @PutMapping("/loans/borrowers/{c_n}/books/{bk_id}")
     public ResponseEntity<?> updateDueDate(@PathVariable Integer c_n, @PathVariable Integer bk_id,@RequestBody BookLoans bookLoansDetail)
     {
-
-        for (BookLoans bookLoans : bookLoansService.findAll())
+        if ( bookLoansDetail != null)
         {
-            if (bookLoans.getCardNo().equals(c_n) && bookLoans.getBookId().equals(bk_id))
+
+            Book book = bookService.findByBookId(bk_id);
+            Borrower borrower = borrowerService.findByCardNo(c_n);
+            for (BookLoans bookLoans : bookLoansService.findAll())
             {
-                    bookLoansDetail.setBookId(bookLoans.getBookId());
-                    bookLoansDetail.setCardNo(bookLoans.getCardNo());
+
+                if (bookLoans.getId().getCardNo() == borrower.getCardNo() && bookLoans.getId().getBookId() == book.getBookId())
+                {
+                    bookLoansDetail.setId(bookLoans.getId());
+                    bookLoansDetail.setBook(bookLoans.getBook());
+                    bookLoansDetail.setBorrower(bookLoans.getBorrower());
                     bookLoansDetail.setDateOut(bookLoans.getDateOut());
                     bookLoans.setDueDate(bookLoansDetail.getDueDate());
                     bookLoansService.save(bookLoans);
                     return new ResponseEntity<BookLoans>(bookLoans,HttpStatus.ACCEPTED);
+                }
             }
+            return new ResponseEntity<>(emptyBookLoans,HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<String>("book Loan not found",HttpStatus.NOT_FOUND);
+        else
+        {
+            return new ResponseEntity<>(emptyBookLoans,HttpStatus.BAD_REQUEST);
+        }
     }
 
 

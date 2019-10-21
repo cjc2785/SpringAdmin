@@ -1,7 +1,9 @@
 package com.ss.lms.service;
 
 import com.ss.lms.dao.BookLoansRepository;
+import com.ss.lms.model.Book;
 import com.ss.lms.model.BookLoans;
+import com.ss.lms.model.Borrower;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +16,10 @@ public class BookLoansService {
 
     public BookLoans save(BookLoans bookLoans) {
         return bookLoansRepository.save(bookLoans);}
-    public Optional<BookLoans> findByBoth( Integer cardNo,Integer bookId)
+    public Optional<BookLoans> findByBoth(Borrower borrower, Book book)
     {
-        return bookLoansRepository.getByCardNoAndBookId(cardNo,bookId);
+
+        return bookLoansRepository.getByBorrowerAndBook(borrower,book);
     }
 
     public Iterable<BookLoans> findAll()
