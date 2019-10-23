@@ -35,14 +35,14 @@ public class AdminController {
     private final LibraryBranch emptyLibraryBranch = new LibraryBranch();
     private final Publisher emptyPublisher = new Publisher();
     public AdminController(AuthorService authorService, PublisherService publisherService, LibraryBranchService libraryBranchService,
-                           BorrowerService borrowerService, BookService bookService, BookLoansService bookLoansService, BookLoansService bookLoansService1) {
+                           BorrowerService borrowerService, BookService bookService, BookLoansService bookLoansService) {
 
         this.authorService = authorService;
         this.publisherService = publisherService;
         this.libraryBranchService = libraryBranchService;
         this.borrowerService = borrowerService;
         this.bookService = bookService;
-        this.bookLoansService = bookLoansService1;
+        this.bookLoansService = bookLoansService;
     }
     @ExceptionHandler(HttpClientErrorException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -84,7 +84,7 @@ public class AdminController {
         }
 
     @GetMapping("/authors")
-    public Iterable<Author> getAllPTs() {
+    public Iterable<Author> getAllauthors() {
         return authorService.findAll();
     }
 
